@@ -1,0 +1,52 @@
+/* --- No changes needed from the previous version --- */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    background-color: #f8f9fa;
+    color: #343a40;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+    max-width: 1200px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.greeting-header {
+    font-size: 1.1em; font-weight: 500; color: #495057; margin: 5px 0 0 0;
+    text-align: center; flex-shrink: 0; height: 1.5em;
+}
+.percentage-header {
+    font-size: 2.2em; font-weight: 700; color: #007bff; margin: 5px 0 5px 0;
+    text-align: center; flex-shrink: 0; height: 1.5em;
+}
+h1 {
+    text-align: center; color: #343a40; margin: 0 0 10px 0; font-size: 1.3em;
+    font-weight: 600; flex-shrink: 0;
+}
+#progress-container {
+    width: 100%; text-align: center; flex-grow: 1; display: flex;
+    flex-direction: column; min-height: 0; margin-bottom: 5px;
+}
+.weeks-grid {
+    display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 1px;
+    padding: 5px; border: 1px solid #dee2e6; border-radius: 5px; background-color: #ffffff;
+    flex-grow: 1; overflow: hidden; min-height: 0; margin-bottom: 8px;
+}
+.week-block { height: 7px; background-color: #e9ecef; border-radius: 1px; box-sizing: border-box; }
+.week-block.filled { background-color: #28a745; }
+.loading-message, .settings-prompt { text-align: center; padding: 20px; font-size: 1.1em; color: #6c757d; width: 100%; }
+.settings-prompt a { color: #007bff; text-decoration: none; font-weight: 500; }
+.settings-prompt a:hover { text-decoration: underline; }
+.summary-text { margin-top: 0; font-size: 0.8em; color: #495057; font-weight: 500; flex-shrink: 0; line-height: 1.2; }
