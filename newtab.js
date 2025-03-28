@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (actualTotalWeeks > 0) {
             percentageLived = Math.min(100, (actualWeeksLived / actualTotalWeeks) * 100);
         }
-        percentageElement.textContent = `${percentageLived.toFixed(2)}% Lived`;
+        percentageElement.textContent = `${Math.round(percentageLived)}% Lived`;
 
         // ...(Height/Window Size calculations as before)...
          const viewportHeight = window.innerHeight;
