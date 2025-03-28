@@ -30,20 +30,32 @@ document.addEventListener('DOMContentLoaded', () => {
      }
 
     // --- Render Grid ---
-    const renderGrid = (weeksToRender, weeksLived) => { /* ... (keep renderGrid function as before) ... */
-         progressBar.innerHTML = '';
-         const fragment = document.createDocumentFragment();
-         const maxWeeks = Math.max(0, Math.floor(weeksToRender));
-         for (let i = 1; i <= maxWeeks; i++) {
-             const weekBox = document.createElement('div');
-             weekBox.classList.add('week-block');
-             if (i <= weeksLived) { weekBox.classList.add('filled'); }
-             fragment.appendChild(weekBox);
-         }
-         if (maxWeeks === 0 && progressBar.innerHTML === '') {
-              progressBar.innerHTML = '<p class="settings-prompt">Window too small to display grid.</p>';
-         } else { progressBar.appendChild(fragment); }
-     };
+    const renderGrid = (weeksToRender, weeksLived) => {
+        progressBar.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        const maxWeeks = Math.max(0, Math.floor(weeksToRender));
+        const currentWeek = weeksLived + 1; // Current week is the next week after weeks lived
+
+        for (let i = 1; i <= maxWeeks; i++) {
+            const weekBox = document.createElement('div');
+            weekBox.classList.add('week-block');
+            
+            if (i < currentWeek) {
+                weekBox.classList.add('past');
+            } else if (i === currentWeek) {
+                weekBox.classList.add('current');
+            } else {
+                weekBox.classList.add('future');
+            }
+            
+            fragment.appendChild(weekBox);
+        }
+        if (maxWeeks === 0 && progressBar.innerHTML === '') {
+            progressBar.innerHTML = '<p class="settings-prompt">Window too small to display grid.</p>';
+        } else {
+            progressBar.appendChild(fragment);
+        }
+    };
 
     // --- Update ALL display elements (using DEFAULT_LIFESPAN) ---
     const updateDisplay = () => {

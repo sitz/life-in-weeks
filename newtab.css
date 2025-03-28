@@ -44,8 +44,19 @@ h1 {
     padding: 5px; border: 1px solid #dee2e6; border-radius: 5px; background-color: #ffffff;
     flex-grow: 1; overflow: hidden; min-height: 0; margin-bottom: 8px;
 }
+@keyframes pulsate {
+    0% { box-shadow: 0 0 5px #28a745; }
+    50% { box-shadow: 0 0 15px #28a745; }
+    100% { box-shadow: 0 0 5px #28a745; }
+}
 .week-block { height: 7px; background-color: #e9ecef; border-radius: 1px; box-sizing: border-box; }
-.week-block.filled { background-color: #28a745; }
+.week-block.past { background-color: #a8d1ff; }
+.week-block.current { 
+    background-color: #28a745;
+    animation: pulsate 2s infinite;
+    z-index: 1;
+}
+.week-block.future { background-color: #e9ecef; }
 .loading-message, .settings-prompt { text-align: center; padding: 20px; font-size: 1.1em; color: #6c757d; width: 100%; }
 .settings-prompt a { color: #007bff; text-decoration: none; font-weight: 500; }
 .settings-prompt a:hover { text-decoration: underline; }
