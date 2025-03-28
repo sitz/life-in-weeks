@@ -11,8 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Constants ---
     const WEEKS_IN_YEAR = 52;
     const MS_IN_WEEK = 1000 * 60 * 60 * 24 * 7;
-    const DEFAULT_LIFESPAN = 80; // <<< --- Fixed Lifespan Constant --- >>>
+    const DEFAULT_LIFESPAN = 79; // <<< --- Fixed Lifespan Constant --- >>>
     const BLOCK_HEIGHT_WITH_GAP = 8; // 7px height + 1px gap
+
+    // Life events data
+    const LIFE_EVENTS = [
+        { age: 0, emoji: '👶', event: 'Birth' },
+        { age: 6, emoji: '🏫', event: 'Start of School' },
+        { age: 18, emoji: '🎓', event: 'High School Graduation' },
+        { age: 22, emoji: '🧑‍🎓', event: 'College Graduation' },
+        { age: 25, emoji: '💼', event: 'First Full Time Job' },
+        { age: 27, emoji: '👪', event: 'Birth of First Child' },
+        { age: 29, emoji: '💍', event: 'First Marriage' },
+        { age: 62, emoji: '🏖️', event: 'Retirement' },
+        { age: 79, emoji: '🕊️', event: 'Death' }
+    ];
 
     // --- State Variables ---
     let currentName = '';
@@ -46,6 +59,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 weekBox.classList.add('current');
             } else {
                 weekBox.classList.add('future');
+            }
+
+            // Calculate the year and week number for this block
+            const year = Math.floor((i - 1) / WEEKS_IN_YEAR);
+            const weekInYear = (i - 1) % WEEKS_IN_YEAR;
+            
+            // Special handling for birth (first block) and death (last block)
+            if (i === 1) {
+                const birthEvent = LIFE_EVENTS.find(event => event.age === 0);
+                if (birthEvent) {
+                    weekBox.classList.add('life-event');
+                    weekBox.textContent = birthEvent.emoji;
+                    weekBox.setAttribute('data-event', `${birthEvent.event} (Age ${birthEvent.age})`);
+                }
+            } else if (i === maxWeeks) {
+                const deathEvent = LIFE_EVENTS.find(event => event.age === 79);
+                if (deathEvent) {
+                    weekBox.classList.add('life-event');
+                    weekBox.textContent = deathEvent.emoji;
+                    weekBox.setAttribute('data-event', `${deathEvent.event} (Age ${deathEvent.age})`);
+                }
+            } else {
+                // For other life events
+                const event = LIFE_EVENTS.find(event => {
+                    if (event.age === 0 || event.age === 79) return false; // Skip birth and death
+                    const eventStartWeek = event.age * WEEKS_IN_YEAR;
+                    return i === eventStartWeek + event.age; // Place in week matching the age number
+                });
+                
+                if (event) {
+                    weekBox.classList.add('life-event');
+                    weekBox.textContent = event.emoji;
+                    weekBox.setAttribute('data-event', `${event.event} (Age ${event.age})`);
+                }
             }
             
             fragment.appendChild(weekBox);
@@ -81,25 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         percentageElement.textContent = `${Math.round(percentageLived)}% Lived`;
 
-        // ...(Height/Window Size calculations as before)...
-         const viewportHeight = window.innerHeight;
-         const greetingHeight = greetingElement.offsetHeight || 0;
-         const percentageHeight = percentageElement.offsetHeight || 0;
-         const titleHeight = titleElement.offsetHeight || 0;
-         const progressTextHeight = progressText.offsetHeight || 15;
-         const verticalMargins = 35;
-         const availableHeight = viewportHeight - greetingHeight - percentageHeight - titleHeight - progressTextHeight - verticalMargins - 15;
-         const maxRows = Math.max(0, Math.floor(availableHeight / BLOCK_HEIGHT_WITH_GAP));
-         const totalWeeksToShow = maxRows * WEEKS_IN_YEAR;
+        // Calculate total weeks to show based on DEFAULT_LIFESPAN
+        const totalWeeksToShow = actualTotalWeeks;
 
         // --- Update Summary Text ---
-        // Simplified summary using the fixed lifespan constant
         let summary = `Week ${actualWeeksLived.toLocaleString()} of ${actualTotalWeeks.toLocaleString()} (Based on ${lifespanToUse} year lifespan).`;
-        if (totalWeeksToShow < actualTotalWeeks && totalWeeksToShow > 0) {
-            summary += ` Displaying ${totalWeeksToShow.toLocaleString()} weeks.`;
-        } else if (totalWeeksToShow === 0 && actualTotalWeeks > 0) {
-            summary += ` Window too small.`;
-        }
         progressText.textContent = summary;
 
         // --- Render Grid ---

@@ -6,8 +6,10 @@ body {
     color: #343a40;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    align-items: center;
+    height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -16,40 +18,70 @@ body {
     flex-direction: column;
     align-items: center;
     width: 95%;
-    max-width: 1200px;
-    padding: 10px 15px;
+    max-width: 1400px;
+    padding: 10px;
     box-sizing: border-box;
-    height: 100vh;
-    overflow: hidden;
+    height: 95vh;
 }
 
 .greeting-header {
-    font-size: 1.1em; font-weight: 500; color: #495057; margin: 5px 0 0 0;
-    text-align: center; flex-shrink: 0; height: 1.5em;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+    text-align: center;
+    flex-shrink: 0;
 }
+
 .percentage-header {
-    font-size: 2.2em; font-weight: 700; color: #007bff; margin: 5px 0 5px 0;
-    text-align: center; flex-shrink: 0; height: 1.5em;
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #007bff;
+    margin: 5px 0;
+    text-align: center;
+    flex-shrink: 0;
 }
+
 h1 {
     text-align: center; color: #343a40; margin: 0 0 10px 0; font-size: 1.3em;
     font-weight: 600; flex-shrink: 0;
 }
+
 #progress-container {
-    width: 100%; text-align: center; flex-grow: 1; display: flex;
-    flex-direction: column; min-height: 0; margin-bottom: 5px;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0;
 }
+
 .weeks-grid {
-    display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 1px;
-    padding: 5px; border: 1px solid #dee2e6; border-radius: 5px; background-color: #ffffff;
-    flex-grow: 1; overflow: hidden; min-height: 0; margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 1px;
+    padding: 5px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #ffffff;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
 }
+
 @keyframes pulsate {
     0% { box-shadow: 0 0 5px #28a745; }
     50% { box-shadow: 0 0 15px #28a745; }
     100% { box-shadow: 0 0 5px #28a745; }
 }
-.week-block { height: 7px; background-color: #e9ecef; border-radius: 1px; box-sizing: border-box; }
+
+.week-block { 
+    height: 6px; 
+    background-color: #e9ecef; 
+    border-radius: 1px; 
+    box-sizing: border-box;
+    position: relative;
+}
+
 .week-block.past { background-color: #a8d1ff; }
 .week-block.current { 
     background-color: #28a745;
@@ -57,7 +89,45 @@ h1 {
     z-index: 1;
 }
 .week-block.future { background-color: #e9ecef; }
+.week-block.life-event {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+}
+.week-block.life-event::after {
+    content: attr(data-event);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+}
+.week-block.life-event:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
 .loading-message, .settings-prompt { text-align: center; padding: 20px; font-size: 1.1em; color: #6c757d; width: 100%; }
 .settings-prompt a { color: #007bff; text-decoration: none; font-weight: 500; }
 .settings-prompt a:hover { text-decoration: underline; }
-.summary-text { margin-top: 0; font-size: 0.8em; color: #495057; font-weight: 500; flex-shrink: 0; line-height: 1.2; }
+.summary-text { 
+    margin: 15px 0 10px 0;
+    font-size: 0.8em;
+    color: #495057;
+    font-weight: 500;
+    flex-shrink: 0;
+    line-height: 1.2;
+    text-align: center;
+    width: 100%;
+}
