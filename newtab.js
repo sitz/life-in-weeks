@@ -34,67 +34,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Debounce function ---
     function debounce(func, wait) { /* ... (keep debounce function as before) ... */
-         let timeout;
-         return function executedFunction(...args) {
-             const later = () => { clearTimeout(timeout); func(...args); };
-             clearTimeout(timeout);
-             timeout = setTimeout(later, wait);
-         };
-     }
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => { clearTimeout(timeout); func(...args); };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 
     // --- Render Grid ---
-    const renderGrid = (weeksToRender, weeksLived) => {
+    const renderGrid = (totalYears, weeksLived, lifespanYears) => {
         progressBar.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        const maxWeeks = Math.max(0, Math.floor(weeksToRender));
         const currentWeek = weeksLived + 1; // Current week is the next week after weeks lived
+
+        // Calculate total weeks based on years (each row = 1 year = 52 weeks)
+        const maxWeeks = totalYears * WEEKS_IN_YEAR;
 
         for (let i = 1; i <= maxWeeks; i++) {
             const weekBox = document.createElement('div');
             weekBox.classList.add('week-block');
-            
+
+            // Calculate the year (0-indexed) and week within that year (1-indexed)
+            const yearIndex = Math.floor((i - 1) / WEEKS_IN_YEAR); // 0-indexed year (age)
+            const weekInYear = ((i - 1) % WEEKS_IN_YEAR) + 1; // 1-indexed week in year
+
             if (i < currentWeek) {
                 weekBox.classList.add('past');
             } else if (i === currentWeek) {
                 weekBox.classList.add('current');
+                // Add year progress tooltip only for current block
+                weekBox.setAttribute('data-tooltip', `Age ${yearIndex}, Week ${weekInYear} of 52 (${Math.round((weekInYear / WEEKS_IN_YEAR) * 100)}% of year)`);
             } else {
                 weekBox.classList.add('future');
             }
 
-            // Calculate the year and week number for this block
-            const year = Math.floor((i - 1) / WEEKS_IN_YEAR);
-            const weekInYear = (i - 1) % WEEKS_IN_YEAR;
-            
-            // Special handling for birth (first block) and death (last block)
+            // Check if this week is beyond life expectancy
+            if (yearIndex >= lifespanYears) {
+                weekBox.classList.add('extended');
+            }
+
+            // Life events - place at Nth column of Nth year (diagonal pattern)
             if (i === 1) {
+                // Birth - first block
                 const birthEvent = LIFE_EVENTS.find(event => event.age === 0);
                 if (birthEvent) {
                     weekBox.classList.add('life-event');
                     weekBox.textContent = birthEvent.emoji;
                     weekBox.setAttribute('data-event', `${birthEvent.event} (Age ${birthEvent.age})`);
                 }
-            } else if (i === maxWeeks) {
-                const deathEvent = LIFE_EVENTS.find(event => event.age === 79);
+            } else if (i === lifespanYears * WEEKS_IN_YEAR) {
+                // Death - last block of lifespan
+                const deathEvent = LIFE_EVENTS.find(event => event.age === DEFAULT_LIFESPAN);
                 if (deathEvent) {
                     weekBox.classList.add('life-event');
                     weekBox.textContent = deathEvent.emoji;
                     weekBox.setAttribute('data-event', `${deathEvent.event} (Age ${deathEvent.age})`);
                 }
             } else {
-                // For other life events
+                // Other life events at Nth week of Nth year (diagonal)
                 const event = LIFE_EVENTS.find(event => {
-                    if (event.age === 0 || event.age === 79) return false; // Skip birth and death
-                    const eventStartWeek = event.age * WEEKS_IN_YEAR;
-                    return i === eventStartWeek + event.age; // Place in week matching the age number
+                    if (event.age === 0 || event.age === DEFAULT_LIFESPAN) return false;
+                    // Place at column N (weekInYear) of row N (yearIndex)
+                    return event.age === yearIndex && event.age === weekInYear;
                 });
-                
+
                 if (event) {
                     weekBox.classList.add('life-event');
                     weekBox.textContent = event.emoji;
                     weekBox.setAttribute('data-event', `${event.event} (Age ${event.age})`);
                 }
             }
-            
+
             fragment.appendChild(weekBox);
         }
         if (maxWeeks === 0 && progressBar.innerHTML === '') {
@@ -107,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Update ALL display elements (using DEFAULT_LIFESPAN) ---
     const updateDisplay = () => {
         if (!currentDob) { // Check only for DOB now
-             showSettingsPrompt();
-             return;
+            showSettingsPrompt();
+            return;
         }
 
         const lifespanToUse = DEFAULT_LIFESPAN; // Use the constant
@@ -118,44 +129,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const birthDate = new Date(currentDob);
         const today = new Date();
-        const actualTotalWeeks = Math.floor(lifespanToUse * WEEKS_IN_YEAR);
-        const millisecondsLived = today.getTime() - birthDate.getTime();
-        const actualWeeksLived = Math.floor(millisecondsLived / MS_IN_WEEK);
+
+        // Calculate completed years (age)
+        let ageYears = today.getFullYear() - birthDate.getFullYear();
+        const birthdayThisYear = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+
+        // Check if birthday hasn't occurred yet this year
+        if (today < birthdayThisYear) {
+            ageYears--;
+        }
+
+        // Calculate weeks since last birthday (for current year progress)
+        const lastBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (today < lastBirthday) {
+            lastBirthday.setFullYear(lastBirthday.getFullYear() - 1);
+        }
+        const msSinceLastBirthday = today.getTime() - lastBirthday.getTime();
+        const weeksSinceLastBirthday = Math.floor(msSinceLastBirthday / MS_IN_WEEK);
+
+        // Total weeks lived = completed years * 52 + weeks into current year
+        const actualWeeksLived = (ageYears * WEEKS_IN_YEAR) + weeksSinceLastBirthday;
+        const actualYearsLived = ageYears;
+
+        // Determine total years to display: max of life expectancy or actual age + 1
+        const totalYearsToShow = Math.max(lifespanToUse, actualYearsLived + 1);
+        const actualTotalWeeks = totalYearsToShow * WEEKS_IN_YEAR;
 
         let percentageLived = 0;
-        if (actualTotalWeeks > 0) {
-            percentageLived = Math.min(100, (actualWeeksLived / actualTotalWeeks) * 100);
+        const expectedTotalWeeks = lifespanToUse * WEEKS_IN_YEAR;
+        if (expectedTotalWeeks > 0) {
+            percentageLived = (actualWeeksLived / expectedTotalWeeks) * 100;
         }
-        percentageElement.textContent = `${Math.round(percentageLived)}% Lived`;
 
-        // Calculate total weeks to show based on DEFAULT_LIFESPAN
-        const totalWeeksToShow = actualTotalWeeks;
+        // Show percentage, can be over 100% if past life expectancy
+        if (percentageLived > 100) {
+            percentageElement.textContent = `${Math.round(percentageLived)}% Lived 🎉`;
+        } else {
+            percentageElement.textContent = `${Math.round(percentageLived)}% Lived`;
+        }
 
         // --- Update Summary Text ---
-        let summary = `Week ${actualWeeksLived.toLocaleString()} of ${actualTotalWeeks.toLocaleString()} (Based on ${lifespanToUse} year lifespan).`;
+        let summary = `Week ${actualWeeksLived.toLocaleString()} of ${expectedTotalWeeks.toLocaleString()} (Based on ${lifespanToUse} year lifespan).`;
+        if (actualYearsLived >= lifespanToUse) {
+            summary += ` You've exceeded life expectancy by ${actualYearsLived - lifespanToUse + 1} years!`;
+        }
         progressText.textContent = summary;
 
         // --- Render Grid ---
-        renderGrid(totalWeeksToShow, actualWeeksLived);
+        renderGrid(totalYearsToShow, actualWeeksLived, lifespanToUse);
         settingsPrompt.innerHTML = ''; // Clear settings prompt if successful
     };
 
-     // --- Settings Prompt & Link ---
-     const openSettingsPopup = () => { /* ... (keep as before) ... */ };
-     const addSettingsLinkListener = () => { /* ... (keep as before) ... */ };
-     const showSettingsPrompt = () => {
-          progressBar.innerHTML = '';
-          greetingElement.textContent = 'Welcome!';
-          percentageElement.textContent = '- % Lived';
-          progressText.textContent = 'Please set your Name and Date of Birth.'; // Updated prompt
-          settingsPrompt.innerHTML = `Click the <a href="#" id="open-settings">extension icon</a> in your toolbar to get started.`;
-          addSettingsLinkListener();
-      };
+    // --- Settings Prompt & Link ---
+    const openSettingsPopup = () => { /* ... (keep as before) ... */ };
+    const addSettingsLinkListener = () => { /* ... (keep as before) ... */ };
+    const showSettingsPrompt = () => {
+        progressBar.innerHTML = '';
+        greetingElement.textContent = 'Welcome!';
+        percentageElement.textContent = '- % Lived';
+        progressText.textContent = 'Please set your Name and Date of Birth.'; // Updated prompt
+        settingsPrompt.innerHTML = `Click the <a href="#" id="open-settings">extension icon</a> in your toolbar to get started.`;
+        addSettingsLinkListener();
+    };
 
 
     // --- Initial Load ---
     chrome.storage.sync.get(['userName', 'userDob'], (data) => { // Only fetch name and DOB
-         if (chrome.runtime.lastError) { /* ... (error handling) ... */ }
+        if (chrome.runtime.lastError) { /* ... (error handling) ... */ }
 
         currentName = data.userName || '';
         currentDob = data.userDob;
@@ -174,21 +214,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 250);
     window.addEventListener('resize', handleResize);
 
-     // --- Setup Storage Change Listener ---
-     chrome.storage.onChanged.addListener((changes, namespace) => {
-         if (namespace === 'sync' && (changes.userName || changes.userDob)) { // Only listen for name/dob changes
-             console.log('Settings changed, reloading display...');
-             // Refetch data and update state
-              chrome.storage.sync.get(['userName', 'userDob'], (newData) => {
-                 currentName = newData.userName || '';
-                 currentDob = newData.userDob;
-                 // Update the display based on potentially new data
-                 if (!currentDob) {
+    // --- Setup Storage Change Listener ---
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (namespace === 'sync' && (changes.userName || changes.userDob)) { // Only listen for name/dob changes
+            console.log('Settings changed, reloading display...');
+            // Refetch data and update state
+            chrome.storage.sync.get(['userName', 'userDob'], (newData) => {
+                currentName = newData.userName || '';
+                currentDob = newData.userDob;
+                // Update the display based on potentially new data
+                if (!currentDob) {
                     showSettingsPrompt();
-                 } else {
+                } else {
                     updateDisplay();
-                 }
-             });
-         }
-     });
+                }
+            });
+        }
+    });
 });
