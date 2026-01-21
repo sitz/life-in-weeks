@@ -145,7 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
             lastBirthday.setFullYear(lastBirthday.getFullYear() - 1);
         }
         const msSinceLastBirthday = today.getTime() - lastBirthday.getTime();
-        const weeksSinceLastBirthday = Math.floor(msSinceLastBirthday / MS_IN_WEEK);
+        // Cap weeks at 51 (so max is 52nd week completed) to prevent rolling over to next year (next row)
+        // before the actual birthday, since 52 weeks = 364 days < 365 days.
+        const weeksSinceLastBirthday = Math.min(Math.floor(msSinceLastBirthday / MS_IN_WEEK), 51);
 
         // Total weeks lived = completed years * 52 + weeks into current year
         const actualWeeksLived = (ageYears * WEEKS_IN_YEAR) + weeksSinceLastBirthday;
