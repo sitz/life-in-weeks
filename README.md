@@ -1,30 +1,56 @@
-# Life in Weeks - Chrome Extension
+# Life in Weeks
 
-## See Your Life, Week by Week
+> The days are long, but the years are short.
 
-This Chrome extension gently transforms your new tab page into a visual reminder of your time. It displays your life as a grid of weeks, helping you appreciate the weeks passed and look forward to the ones ahead.
+A Chrome extension that transforms your new tab page into a powerful visual reminder of your time on Earth. Every time you open a new tab, you'll see your entire life displayed as a grid of weeks — each box representing one week of your life.
 
-![Screenshot of the Life in Weeks new tab page](screenshot.png)
+![Life in Weeks Screenshot](assets/screenshot.png)
 
-## Inspiration
+## 📥 Install
 
-This extension is inspired by the Wait But Why post, [Your Life in Weeks](https://waitbutwhy.com/2014/05/life-weeks.html). The core idea is powerful: seeing your entire life laid out as a grid of countable weeks makes the abstract concept of time feel finite and tangible. It's easy to feel like life is made of countless weeks, but seeing them all laid out puts things in perspective.
+**From Chrome Web Store (Recommended):**
 
-Each filled square represents a week gone by, and the grid of empty squares represents the time you still have. It serves as a reminder that this time is yours to fill, encouraging reflection on how you spend each week and motivating you to make the most of the precious, empty squares remaining.
+[![Chrome Web Store](https://developer.chrome.com/static/docs/webstore/branding/image/HRs9MPufa1J1h5glNhut.png)](https://chromewebstore.google.com/detail/life-in-weeks/jnfocknbjaeaojgnlkfhclpeadlmddnp)
 
-## Installation
+**Manual Installation (for developers):**
 
-1.  Download the extension files from the [GitHub repository](https://github.com/sitz/life-in-weeks).
-2.  Open Chrome, go to `chrome://extensions`, and turn on "Developer mode".
-3.  Click "Load unpacked" and select the folder where you saved the files.
+1. Clone this repository or download the files
+2. Open Chrome and go to `chrome://extensions`
+3. Enable **Developer mode** (top right toggle)
+4. Click **Load unpacked** and select this folder
 
-## How to Use
+## 🚀 Getting Started
 
-1.  **Set Your Details:** Click the "Life in Weeks" icon in your Chrome toolbar. A small window will pop up.
-2.  Enter your name (optional) and your date of birth.
-3.  Click "Save Settings".
-4.  **View Your Grid:** Open a new browser tab (`Ctrl+T` or `Cmd+T`). You'll see your personalized life in weeks.
+1. **Click the extension icon** in your Chrome toolbar
+2. **Enter your name** (optional) and **date of birth**
+3. **Click Save** — that's it!
+
+Now open any new tab (`Cmd+T` / `Ctrl+T`) to see your life in weeks.
+
+## 🎯 The Philosophy
+
+This extension is inspired by the iconic [Wait But Why post on "Your Life in Weeks"](https://waitbutwhy.com/2014/05/life-weeks.html).
+
+The idea is simple but profound: when you see your entire life as a finite grid of boxes, time stops feeling infinite. Those empty boxes aren't just future weeks — they're opportunities waiting to be filled.
+
+**The green boxes?** Those are behind you.  
+**The faded blue boxes?** Those are ahead.  
+**That one bright box?** That's *this* week. Make it count.
+
+## 🔒 Privacy
+
+Your data stays on your device. The extension:
+- ✅ Stores your settings locally in Chrome sync storage
+- ✅ Works completely offline
+- ❌ Never sends data to any server
+- ❌ Never tracks or analyzes your behavior
+
+## 📄 License
+
+MIT License — do what you want with it.
 
 ---
 
-Make your weeks count!
+<p align="center">
+  <em>Make each week count.</em>
+</p>
