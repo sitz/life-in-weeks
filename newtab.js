@@ -106,6 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // Add tooltip position class based on column position
+            // Left edge (first 8 columns): show tooltip to the right
+            // Right edge (last 8 columns): show tooltip to the left  
+            // Otherwise: show above (default)
+            if (weekInYear <= 8) {
+                weekBox.classList.add('tooltip-right');
+            } else if (weekInYear >= 45) {
+                weekBox.classList.add('tooltip-left');
+            }
+
             fragment.appendChild(weekBox);
         }
         if (maxWeeks === 0 && progressBar.innerHTML === '') {
@@ -163,18 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
             percentageLived = (actualWeeksLived / expectedTotalWeeks) * 100;
         }
 
-        // Show percentage, can be over 100% if past life expectancy
-        if (percentageLived > 100) {
-            percentageElement.textContent = `${Math.round(percentageLived)}% Lived 🎉`;
-        } else {
-            percentageElement.textContent = `${Math.round(percentageLived)}% Lived`;
-        }
+        percentageElement.textContent = `You have lived ${Math.round(percentageLived)}% of your expected life.`;
 
         // --- Update Summary Text ---
         let summary = `Week ${actualWeeksLived.toLocaleString()} of ${expectedTotalWeeks.toLocaleString()} (Based on ${lifespanToUse} year lifespan).`;
         if (actualYearsLived >= lifespanToUse) {
             summary += ` You've exceeded life expectancy by ${actualYearsLived - lifespanToUse + 1} years!`;
         }
+
+        progressText.style.whiteSpace = 'pre-line';
+        summary += '\n\nMake each moment count.';
         progressText.textContent = summary;
 
         // --- Render Grid ---

@@ -120,9 +120,8 @@ h1 {
 .week-block.life-event::after {
     content: attr(data-event);
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: calc(100% + 4px);
+    left: 0;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 4px 8px;
@@ -133,6 +132,7 @@ h1 {
     visibility: hidden;
     transition: opacity 0.2s, visibility 0.2s;
     pointer-events: none;
+    z-index: 100;
 }
 
 .week-block.life-event:hover::after {
@@ -144,9 +144,8 @@ h1 {
 .week-block[data-tooltip]::before {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: calc(100% + 4px);
+    left: 0;
     background-color: rgba(0, 0, 0, 0.85);
     color: white;
     padding: 6px 10px;
@@ -157,13 +156,31 @@ h1 {
     visibility: hidden;
     transition: opacity 0.2s, visibility 0.2s;
     pointer-events: none;
-    z-index: 10;
-    margin-bottom: 4px;
+    z-index: 100;
 }
 
 .week-block[data-tooltip]:hover::before {
     opacity: 1;
     visibility: visible;
+}
+
+/* Tooltip positioning for left edge - show tooltip to the RIGHT of the block */
+.week-block.tooltip-right.life-event::after,
+.week-block.tooltip-right[data-tooltip]::before {
+    bottom: auto;
+    top: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+
+/* Tooltip positioning for right edge - show tooltip to the LEFT of the block */
+.week-block.tooltip-left.life-event::after,
+.week-block.tooltip-left[data-tooltip]::before {
+    bottom: auto;
+    top: 50%;
+    left: auto;
+    right: calc(100% + 8px);
+    transform: translateY(-50%);
 }
 
 /* Extended blocks (beyond life expectancy) */
